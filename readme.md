@@ -8,7 +8,7 @@ Projekt zaliczeniowy realizujący backendową część systemu do zarządzania o
 
 ## 🔗 Repozytorium
 
-Link do repozytorium GitHub: [Wklej tutaj link do swojego GitHuba]
+Link do repozytorium GitHub: https://github.com/JakubBrzeszcz/DziekanatAPI
 
 ## ✨ Zrealizowane funkcje
 
