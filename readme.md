@@ -4,7 +4,7 @@ Projekt zaliczeniowy realizujący backendową część systemu do zarządzania o
 
 ## 👥 Autorzy
 
-- **[Twoje Imię i Nazwisko]** - (Twój numer indeksu)
+- **Jakub Brzeszcz** - 15732
 
 ## 🔗 Repozytorium
 
