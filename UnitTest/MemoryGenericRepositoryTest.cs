@@ -1,5 +1,6 @@
 using CoreApp.Entities;
 using CoreApp.Repositories;
+using CoreApp.ValueObjects;
 using Infrastructure.Memory;
 
 namespace UnitTest;
@@ -137,7 +138,7 @@ public class MemoryGenericRepositoryTest
             Id = Guid.NewGuid(),
             FirstName = firstName,
             LastName = lastName,
-            NationalId = "12345678901",
+            NationalId = new Pesel("12345678903"), // Zmieniono na poprawny Value Object PESEL
             Email = $"{firstName.ToLowerInvariant()}.{lastName.ToLowerInvariant()}@example.com",
             YearOfStudy = 1
         };

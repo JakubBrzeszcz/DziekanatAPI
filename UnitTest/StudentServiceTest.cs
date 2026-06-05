@@ -33,7 +33,7 @@ public class StudentServiceTest
     public async Task AddStudent_ViaService_ShouldCreateAndReturnStudent()
     {
         // ARRANGE: Przygotowujemy dane wejściowe (DTO)
-        var dto = new StudentCreateDto { FirstName = "Anna", LastName = "Testowa", NationalId = "95050512345", Email = "anna.testowa@example.com", YearOfStudy = 2, ProgramCode = "IT-BSC", EnrollmentYearFrom = 2023 };
+        var dto = new StudentCreateDto { FirstName = "Anna", LastName = "Testowa", NationalId = "95050512346", Email = "anna.testowa@example.com", YearOfStudy = 2, ProgramCode = "IT-BSC", EnrollmentYearFrom = 2023 };
 
         // ACT: Wywołujemy metodę serwisu, którą testujemy
         var createdStudentDto = await _studentService.AddStudent(dto);
@@ -52,7 +52,7 @@ public class StudentServiceTest
     public async Task UpdateStudent_WhenExists_ShouldUpdateAndReturnDto()
     {
         // ARRANGE: Stwórz studenta, którego będziemy aktualizować
-        var createDto = new StudentCreateDto { FirstName = "Jan", LastName = "Kowalski", NationalId = "90010112345", Email = "jan.kowalski@example.com", YearOfStudy = 1, ProgramCode = "CS-BSC", EnrollmentYearFrom = 2023 };
+        var createDto = new StudentCreateDto { FirstName = "Jan", LastName = "Kowalski", NationalId = "90010112349", Email = "jan.kowalski@example.com", YearOfStudy = 1, ProgramCode = "CS-BSC", EnrollmentYearFrom = 2023 };
         var createdStudentDto = await _studentService.AddStudent(createDto);
 
         var updateDto = new StudentUpdateDto
@@ -85,7 +85,7 @@ public class StudentServiceTest
     public async Task DeleteStudent_WhenExists_ShouldSucceedAndRemoveStudent()
     {
         // ARRANGE: Stwórz studenta do usunięcia
-        var createdStudentDto = await _studentService.AddStudent(new StudentCreateDto { FirstName = "Anna", LastName = "Nowak", NationalId = "91020212345", Email = "anna.nowak@example.com", YearOfStudy = 3, ProgramCode = "EE-MSC", EnrollmentYearFrom = 2021 });
+        var createdStudentDto = await _studentService.AddStudent(new StudentCreateDto { FirstName = "Anna", LastName = "Nowak", NationalId = "91020212344", Email = "anna.nowak@example.com", YearOfStudy = 3, ProgramCode = "EE-MSC", EnrollmentYearFrom = 2021 });
         var wasDeleted = await _studentService.DeleteStudentAsync(createdStudentDto.Id);
         Assert.True(wasDeleted);
         Assert.Null(await _studentService.FindStudentByIdAsync(createdStudentDto.Id));
@@ -98,7 +98,7 @@ public class StudentServiceTest
         var program = new DegreeProgram { Id = Guid.NewGuid(), Code = "IT-TEST", Name = "Informatyka Testowa" };
         await _unitOfWork.DegreePrograms.AddAsync(program);
 
-        var dto = new StudentCreateDto { FirstName = "Kamil", LastName = "Programista", NationalId = "99121212345", Email = "kamil.programista@example.com", YearOfStudy = 1, ProgramCode = "IT-TEST", EnrollmentYearFrom = 2023 };
+        var dto = new StudentCreateDto { FirstName = "Kamil", LastName = "Programista", NationalId = "99121212342", Email = "kamil.programista@example.com", YearOfStudy = 1, ProgramCode = "IT-TEST", EnrollmentYearFrom = 2023 };
 
         // ACT
         var createdStudentDto = await _studentService.AddStudent(dto);
@@ -127,7 +127,7 @@ public class StudentServiceTest
     public async Task AddGrade_WhenStudentExists_ShouldAddGrade()
     {
         // ARRANGE
-        var student = await _studentService.AddStudent(new StudentCreateDto { FirstName = "Test", LastName = "Student", NationalId = "11111111111", Email = "test@test.com" });
+        var student = await _studentService.AddStudent(new StudentCreateDto { FirstName = "Test", LastName = "Student", NationalId = "11111111116", Email = "test@test.com" });
         var course = new Course { Id = Guid.NewGuid(), Name = "Test Course" };
         await _unitOfWork.Courses.AddAsync(course);
         var lecturer = new Lecturer { Id = Guid.NewGuid(), FirstName = "Test", LastName = "Lecturer" };
@@ -166,7 +166,7 @@ public class StudentServiceTest
     public async Task UpdateGrade_WhenGradeExists_ShouldUpdateAndReturnDto()
     {
         // ARRANGE: Stwórz studenta i dodaj mu ocenę
-        var student = await _studentService.AddStudent(new StudentCreateDto { FirstName = "Test", LastName = "Student", NationalId = "33333333333", Email = "test3@test.com" });
+        var student = await _studentService.AddStudent(new StudentCreateDto { FirstName = "Test", LastName = "Student", NationalId = "33333333338", Email = "test3@test.com" });
         var course = new Course { Id = Guid.NewGuid(), Name = "Test Course" };
         await _unitOfWork.Courses.AddAsync(course);
         var lecturer = new Lecturer { Id = Guid.NewGuid(), FirstName = "Test", LastName = "Lecturer" };
