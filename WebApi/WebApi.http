@@ -1,0 +1,20 @@
+@WebApi_HostAddress = http://localhost:5247
+
+### 1. Logowanie administratora
+POST {{WebApi_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@wsei.edu.pl",
+  "password": "Admin123!"
+}
+
+### 2. Pobranie danych zabezpieczonych (Zmień na Twój właściwy endpoint np. /api/students)
+# Skopiuj 'accessToken' z odpowiedzi z punktu 1. i wklej poniżej w miejsce <TWÓJ_TOKEN>
+GET {{WebApi_HostAddress}}/api/students
+Accept: application/json
+Authorization: Bearer <TWÓJ_TOKEN>
+
+### 3. Zapytanie bez tokenu (Powinno zwrócić błąd 401 Unauthorized)
+GET {{WebApi_HostAddress}}/api/students
+Accept: application/json
