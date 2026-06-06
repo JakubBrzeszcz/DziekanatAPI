@@ -44,6 +44,10 @@ public class LecturerPanelController : ControllerBase
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
 
+        // Sprawdzenie, czy dany student w ogóle istnieje w bazie
+        var studentExists = await _context.Students.AnyAsync(s => s.Id == studentId);
+        if (!studentExists) return NotFound("Nie znaleziono studenta o podanym ID.");
+
         // Upewniamy się, że prowadzący wystawia ocenę z własnego ramienia (chyba że to pracownik dziekanatu)
         if (!User.IsInRole(UserRole.DeaneryWorker.ToString()) && !User.IsInRole(UserRole.Administrator.ToString()))
         {
@@ -96,6 +100,18 @@ public class LecturerPanelController : ControllerBase
         // Zapis w logu historycznym
         _context.GradeHistories.Add(new GradeHistory { GradeId = grade.Id, OldValue = oldValue, NewValue = dto.GradeValue, ChangedByUserId = userId, Action = "Updated" });
 
+        await _context.SaveChangesAsync();
+        return NoContent();
+    }
+
+    /// <summary>Usuwanie istniejącej oceny.</summary>
+    [HttpDelete("grades/{gradeId}")]
+    public async Task<IActionResult> DeleteGrade(Guid gradeId)
+    {
+        var grade = await _context.Grades.FindAsync(gradeId);
+        if (grade == null) return NotFound("Nie znaleziono oceny.");
+
+        _context.Grades.Remove(grade);
         await _context.SaveChangesAsync();
         return NoContent();
     }

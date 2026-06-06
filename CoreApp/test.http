@@ -1,0 +1,153 @@
+### =========================================
+### 1. AUTORYZACJA
+### =========================================
+
+# @name login
+POST http://localhost:5247/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "jan.kowalski@wsei.edu.pl",
+  "password": "Worker123!"
+}
+
+### Pobranie danych aktualnie zalogowanego użytkownika
+GET http://localhost:5247/api/auth/me
+Authorization: Bearer {{login.response.body.accessToken}}
+
+
+### =========================================
+### 2. DANE SYSTEMOWE (SŁOWNIKI)
+### =========================================
+
+### Pobranie dostępnych kursów (skopiuj stąd courseId)
+GET http://localhost:5247/api/system-data/courses
+
+### Pobranie dostępnych wykładowców (skopiuj stąd lecturerId)
+GET http://localhost:5247/api/system-data/lecturers
+
+
+### =========================================
+### 3. ZARZĄDZANIE STUDENTAMI (CRUD)
+### =========================================
+
+### Pobranie listy studentów (skopiuj stąd studentId)
+GET http://localhost:5247/api/students?page=1&size=10
+
+### Dodanie nowego studenta (test walidacji PESEL)
+# @name createStudent
+POST http://localhost:5247/api/students
+Content-Type: application/json
+Authorization: Bearer {{login.response.body.accessToken}}
+
+{
+  "firstName": "Anna",
+  "lastName": "Nowak",
+  "nationalId": "55030101230", 
+  "email": "anna.nowak@wsei.edu.pl",
+  "yearOfStudy": 1,
+  "programCode": "INF",
+  "enrollmentYearFrom": 2023
+}
+
+### Zapisujemy wygenerowane ID studenta
+@newStudentId = {{createStudent.response.body.id}}
+
+### Pobranie szczegółów utworzonego studenta
+GET http://localhost:5247/api/students/{{newStudentId}}
+Authorization: Bearer {{login.response.body.accessToken}}
+
+### Edycja danych utworzonego studenta
+PUT http://localhost:5247/api/students/{{newStudentId}}
+Content-Type: application/json
+Authorization: Bearer {{login.response.body.accessToken}}
+
+{
+  "id": "{{newStudentId}}",
+  "firstName": "Anna Maria",
+  "lastName": "Miotła",
+  "email": "anna.nowak@wsei.edu.pl",
+  "yearOfStudy": 2,
+  "programCode": "INF",
+  "status": "Active"
+}
+
+### Usunięcie utworzonego studenta
+DELETE http://localhost:5247/api/students/{{newStudentId}}
+Authorization: Bearer {{login.response.body.accessToken}}
+
+### Usunięcie dowolnego (starego) studenta 
+### Podmień WKLEJ_ID_STUDENTA na identyfikator skopiowany z listy pobranej wyżej
+DELETE http://localhost:5247/api/students/b99a81da-8a0c-48d1-95f8-a38bfdf3d6bf
+Authorization: Bearer {{login.response.body.accessToken}}
+
+
+### =========================================
+### 4. OCENY STUDENTA (StudentsController)
+### =========================================
+### UWAGA: Do testów poniżej używamy "stałego" ID studenta 3d54091d-abc8-49ec-9590-93ad3ed5458f
+
+### Pobranie wszystkich ocen studenta
+GET http://localhost:5247/api/students/3d54091d-abc8-49ec-9590-93ad3ed5458f/grades
+Authorization: Bearer {{login.response.body.accessToken}}
+
+### Dodanie oceny przez kontroler studencki
+# @name addStudentGrade
+POST http://localhost:5247/api/students/3d54091d-abc8-49ec-9590-93ad3ed5458f/grades
+Content-Type: application/json
+Authorization: Bearer {{login.response.body.accessToken}}
+
+{
+  "courseId": "c1a2b3d4-e5f6-7890-1234-567890abcdef",
+  "lecturerId": "a1b2c3d4-e5f6-1111-2222-333333333333",
+  "gradeValue": 4.5,
+  "dateOfIssue": "2024-06-01T10:00:00Z"
+}
+
+### Edycja oceny przez kontroler studencki
+PUT http://localhost:5247/api/students/3d54091d-abc8-49ec-9590-93ad3ed5458f/grades/{{addStudentGrade.response.body.id}}
+Content-Type: application/json
+Authorization: Bearer {{login.response.body.accessToken}}
+
+{
+  "gradeValue": 3.0,
+  "dateOfIssue": "2024-06-02T10:00:00Z",
+  "type": "Partial"
+}
+
+
+### =========================================
+### 5. PANEL WYKŁADOWCY I OCENY (Zadanie 11)
+### =========================================
+
+### Pobranie studentów zapisanych na dany kurs
+GET http://localhost:5247/api/lecturer-panel/courses/c1a2b3d4-e5f6-7890-1234-567890abcdef/students
+Authorization: Bearer {{login.response.body.accessToken}}
+
+### Dodanie oceny
+# @name createGrade
+POST http://localhost:5247/api/lecturer-panel/students/3d54091d-abc8-49ec-9590-93ad3ed5458f/grades
+Content-Type: application/json
+Authorization: Bearer {{login.response.body.accessToken}}
+
+{
+  "courseId": "c1a2b3d4-e5f6-7890-1234-567890abcdef",
+  "lecturerId": "a1b2c3d4-e5f6-1111-2222-333333333333",
+  "gradeValue": 5.0,
+  "dateOfIssue": "2024-05-20T12:00:00Z"
+}
+
+### Edycja oceny w Panelu Wykładowcy (Używa gradeId z dodanej wyżej oceny)
+PUT http://localhost:5247/api/lecturer-panel/grades/{{createGrade.response.body.gradeId}}
+Content-Type: application/json
+Authorization: Bearer {{login.response.body.accessToken}}
+
+{
+  "gradeValue": 4.0,
+  "dateOfIssue": "2024-05-21T12:00:00Z",
+  "type": "Partial"
+}
+
+### Usunięcie oceny dodanej przez Panel Wykładowcy (Używa gradeId z dodanej wyżej oceny)
+DELETE http://localhost:5247/api/lecturer-panel/grades/{{createGrade.response.body.gradeId}}
+Authorization: Bearer {{login.response.body.accessToken}}

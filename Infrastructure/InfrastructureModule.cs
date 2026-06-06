@@ -61,13 +61,22 @@ public static class InfrastructureModule
             options.AddPolicy(AppPolicies.ITDepartmentOnly.ToString(), policy =>
                 policy.RequireClaim("department", "IT"));
 
+            // Polityka pozwalająca na zarządzanie ocenami (Wykładowca, Pracownik Dziekanatu, Administrator)
+            options.AddPolicy(AppPolicies.CanManageGrades.ToString(), policy =>
+                policy
+                    .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
+                    .RequireRole(
+                    UserRole.Administrator.ToString(),
+                    UserRole.DeaneryWorker.ToString(),
+                    UserRole.Lecturer.ToString()));
+
             // Domyślna polityka — każdy zalogowany użytkownik
-            options.DefaultPolicy = new AuthorizationPolicyBuilder()
+            options.DefaultPolicy = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme)
                 .RequireAuthenticatedUser()
                 .Build();
 
             // Polityka fallback — stosowana gdy brak atrybutu [Authorize] na endpoincie
-            options.FallbackPolicy = new AuthorizationPolicyBuilder()
+            options.FallbackPolicy = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme)
                 .RequireAuthenticatedUser()
                 .Build();
         });

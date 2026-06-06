@@ -2,6 +2,7 @@ using CoreApp.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.EntityFrameworkCore;
 
 namespace WebApi.Middleware;
 
@@ -26,6 +27,42 @@ public class ProblemDetailsExceptionHandler(
             await context.Response.WriteAsJsonAsync(problemDetails, cancellationToken);
             
             // Zwracamy true, informując, że wyjątek został obsłużony
+            return true;
+        }
+
+        // Sprawdzamy, czy wyjątek to błąd bazy danych (np. naruszenie unikalności PESEL lub Email)
+        if (exception is DbUpdateException dbUpdateException)
+        {
+            logger.LogWarning("Złapano błąd bazy danych (naruszenie unikalności): {Message}", dbUpdateException.InnerException?.Message ?? dbUpdateException.Message);
+
+            var problemDetails = factory.CreateProblemDetails(
+                context,
+                StatusCodes.Status409Conflict, // Używamy statusu 409 Conflict
+                title: "Konflikt danych",
+                detail: "Zasób z takimi unikalnymi danymi (np. podany PESEL lub Email) już istnieje w systemie."
+            );
+
+            context.Response.StatusCode = StatusCodes.Status409Conflict;
+            await context.Response.WriteAsJsonAsync(problemDetails, cancellationToken);
+            return true;
+        }
+
+        // Sprawdzamy, czy wyjątek to błąd walidacji / zły argument (np. błędny PESEL rzucony przez Value Object)
+        // AutoMapper często "owija" takie błędy w AutoMapperMappingException, więc zaglądamy też do InnerException
+        var argEx = exception as ArgumentException ?? exception.InnerException as ArgumentException;
+        if (argEx != null)
+        {
+            logger.LogWarning("Złapano błąd argumentu (walidacja): {Message}", argEx.Message);
+
+            var problemDetails = factory.CreateProblemDetails(
+                context,
+                StatusCodes.Status400BadRequest, // Używamy statusu 400 Bad Request
+                title: "Błąd walidacji danych",
+                detail: argEx.Message
+            );
+
+            context.Response.StatusCode = StatusCodes.Status400BadRequest;
+            await context.Response.WriteAsJsonAsync(problemDetails, cancellationToken);
             return true;
         }
 

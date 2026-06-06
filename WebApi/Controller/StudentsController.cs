@@ -2,6 +2,7 @@ using CoreApp.Dto;
 using CoreApp.Services;
 using CoreApp.Exceptions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WebApi.Controller;
 
@@ -10,6 +11,7 @@ namespace WebApi.Controller;
 public class StudentsController(IStudentService service) : ControllerBase
 {
     [HttpGet]
+    [AllowAnonymous]
     public async Task<IActionResult> GetAllStudents([FromQuery] int page = 1, [FromQuery] int size = 10)
     {
         return Ok(await service.FindAllStudentsPaged(page, size));

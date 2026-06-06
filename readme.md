@@ -59,8 +59,8 @@ Aby uruchomić projekt na swoim środowisku lokalnym, postępuj zgodnie z poniż
 
 Aby uzyskać pełny dostęp do zabezpieczonych endpointów (np. w Panelu Wykładowcy), użyj poniższych danych logowania testowego Administratora w metodzie `POST /api/auth/login`:
 
-- **Email:** `admin@wsei.edu.pl`
-- **Hasło:** `Admin123!`
+- **Email:** `admin@wsei.edu.pl`,`jan.kowalski@wsei.edu.pl`
+- **Hasło:** `Admin123!`, `Worker123!`
 
 Otrzymany `accessToken` skopiuj i umieść w autoryzacji Swaggera (zielony przycisk **Authorize** na górze strony).
 
